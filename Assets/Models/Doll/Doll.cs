@@ -1,54 +1,58 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public enum State
-{
-    Deactivated,
-    Singing,
-    Scaning
-}
 
 public class Doll : MonoBehaviour
 {
-    private State _state;
+    private enum State
+    {
+        Deactivated,
+        Activated,
+        Singing,
+        Scaning
+    }
 
-    public AudioSource Sound;
-    public Transform Head;
     public AudioClip[] Sounds;
-    public Animator Animator;
+
+    [SerializeField] private AudioSource _sound;
+    [SerializeField] private Animator _animator;
+
+    private State _state;
 
     private void Start()
     {
-        StartGame();
+        Invoke(nameof(StartGame), 3f);
     }
 
     public void StartGame()
     {
-        Animator.SetTrigger("Start Game");
+        _animator.SetTrigger("Start Game");
         StartCoroutine(nameof(GreenLight));
-        Animator.ResetTrigger("Sing");
+        _animator.ResetTrigger("Sing");
     }
 
-    private bool s()
+    private bool IsPlaying()
     {
-        return Sound.isPlaying;
+        return _sound.isPlaying;
     }
 
     private IEnumerator GreenLight()
     {
-        Animator.SetTrigger("Sing");
-        Sound.clip = Sounds[0];
-        Sound.Play();
-        yield return new WaitWhile(s);
+        _animator.SetTrigger("Sing");
+        _sound.clip = Sounds[0];
+        _sound.Play();
+        yield return new WaitWhile(IsPlaying);
         StartCoroutine(nameof(RedLight));
     }
 
     private IEnumerator RedLight()
     {
-        Animator.SetTrigger("Scan");
-        Sound.clip = Sounds[1];
-        Sound.Play();
-        yield return new WaitWhile(s);
+        _animator.SetTrigger("Scan");
+        _sound.clip = Sounds[1];
+        _sound.Play();
+        yield return new WaitWhile(IsPlaying);
         StartCoroutine(nameof(GreenLight));
     }
 
@@ -56,19 +60,22 @@ public class Doll : MonoBehaviour
     {
         if (_state == State.Scaning)
         {
-            Participant[] participants = FindObjectsOfType<Participant>();
+            List<Participant> participants = FindObjectsOfType<Participant>().ToList();
             foreach (Participant participant in participants)
             {
-                Rigidbody rb = participant.GetComponent<Rigidbody>();
-                if (rb.velocity.magnitude > 0.1)
+                if (participant.TryGetComponent(out CharacterController controller))
                 {
-                    Destroy(rb.gameObject);
+                    if (controller.velocity.magnitude > 0.1)
+                    {
+                        GameManager.Instance.ExcludePlayer(participant);
+                    }
                 }
+                GameManager.Instance.KillLoosers();
             }
         }
     }
 
-    public void ChangeState(State state)
+    private void ChangeState(State state)
     {
         _state = state;
     }
