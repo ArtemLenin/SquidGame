@@ -5,6 +5,9 @@ using UnityEngine;
 public class Participant : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
+    private bool _isPlaying = true;
+
+    public bool IsPlaying { get => _isPlaying; set => _isPlaying = value; }
 
     public void Dead()
     {

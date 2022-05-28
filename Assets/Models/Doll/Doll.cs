@@ -53,6 +53,10 @@ public class Doll : MonoBehaviour
         _sound.clip = Sounds[1];
         _sound.Play();
         yield return new WaitWhile(IsPlaying);
+        GameManager.Instance.KillLoosers();
+        
+        yield return new WaitWhile(GameManager.Instance.AnyShootersHasTarget);
+
         StartCoroutine(nameof(GreenLight));
     }
 
@@ -65,12 +69,11 @@ public class Doll : MonoBehaviour
             {
                 if (participant.TryGetComponent(out CharacterController controller))
                 {
-                    if (controller.velocity.magnitude > 0.1)
+                    if (controller.velocity.magnitude > 0.1 && participant.IsPlaying)
                     {
                         GameManager.Instance.ExcludePlayer(participant);
                     }
                 }
-                GameManager.Instance.KillLoosers();
             }
         }
     }

@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class Soldier : MonoBehaviour
 {
+    
+
     [SerializeField] private Animator _animator;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip[] _shotSounds;
 
-    private Queue<Participant> _killList;
-    private Participant _currentTarget;
+    [SerializeField] private Queue<Participant> _killList;
+    [SerializeField] private Participant _currentTarget;
+    public int TargetCount = 0;
+    bool state = true;
 
     public Queue<Participant> KillList
     {
@@ -22,31 +26,61 @@ public class Soldier : MonoBehaviour
         _animator.ResetTrigger("Shoot");
     }
 
-    public IEnumerator KillTarget()
+    public bool ShootingDown()
     {
-        if (_currentTarget)
+        //return _animator.GetCurrentAnimatorStateInfo(0).IsName("Firing Rifle");
+        return state;
+    }
+
+    public bool HasAnyTargets()
+    {
+        return TargetCount > 0;
+    }
+
+    public IEnumerator KillAllTarget()
+    {
+        float seconds = Random.Range(0.3f, 1.5f);
+        yield return new WaitForSeconds(seconds);
+        while (HasAnyTargets() || _currentTarget)
         {
-            _animator.SetBool("Aim", true);
-            yield return new WaitForEndOfFrame();
-            _animator.SetTrigger("Shoot");
-            _animator.SetBool("Aim", false);
+            StartCoroutine(nameof(KillTarget));
+            yield return new WaitUntil(ShootingDown);
         }
+    }
+
+    private IEnumerator KillTarget()
+    {
+        state = false;
+        if (!_currentTarget) SetNewTarget();
+        _animator.SetBool("Aim", true);
+        yield return new WaitForEndOfFrame();
+        _animator.SetTrigger("Shoot");
+        yield return new WaitWhile(HasAnyTargets);
+        _animator.SetBool("Aim", false);
     }
 
     private void Shot()
     {
+        Debug.Log($"Убил {_currentTarget.name}");
         _currentTarget.Dead();
+        TargetCount--;
+        SetNewTarget();
         int index = Random.Range(0, _shotSounds.Length);
         _audioSource.clip = _shotSounds[index];
         _audioSource.Play();
-        GetNewTarget();
     }
 
-    public void GetNewTarget()
+    public void SetNewTarget()
     {
-        if (_killList.Count > 0)
+        if (KillList.Count > 0)
         {
-            _currentTarget = _killList.Dequeue();
+            _currentTarget = KillList.Dequeue();
         }
+        else _currentTarget = null;
+    }
+
+    public void ready()
+    {
+        state = true;
     }
 }

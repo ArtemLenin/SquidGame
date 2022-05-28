@@ -6,16 +6,27 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    Soldier[] soldiers;
 
     private void Awake()
     {
         if (!Instance) Instance = this;
     }
 
+    private void Start()
+    {
+        soldiers = FindObjectsOfType<Soldier>();
+    }
+
     public void ExcludePlayer(Participant participant)
     {
         Soldier killer = GetRandomShooter();
-        killer.KillList.Enqueue(participant);
+        if (!killer.KillList.Contains(participant))
+        {
+            killer.KillList.Enqueue(participant);
+            killer.TargetCount++;
+            participant.IsPlaying = false;
+        }
     }
 
     private Soldier GetRandomShooter()
@@ -25,13 +36,21 @@ public class GameManager : MonoBehaviour
         return soldiers[index];
     }
 
-    public void KillLoosers()
+    public bool AnyShootersHasTarget()
     {
-        Soldier[] soldiers = FindObjectsOfType<Soldier>();
         foreach (Soldier soldier in soldiers)
         {
-            soldier.GetNewTarget();
-            StartCoroutine(soldier.KillTarget());
+            if (soldier.HasAnyTargets())
+                return true;
+        }
+        return false;
+    }
+
+    public void KillLoosers()
+    {
+        foreach (Soldier soldier in soldiers)
+        {
+            StartCoroutine(soldier.KillAllTarget());
         }
     }
 }
