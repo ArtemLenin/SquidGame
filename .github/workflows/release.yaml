@@ -51,7 +51,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - PSCIOW
+          - ClownfishGame
         unityVersion:
           - 2021.3.2f1
         targetPlatform:
@@ -60,7 +60,7 @@ jobs:
           - StandaloneWindows64
           - StandaloneLinux64
           #- iOS
-          #- Android
+          - Android
           #- WebGL
           
     steps:
