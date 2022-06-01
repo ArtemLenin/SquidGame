@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class ThirdPersonController : MonoBehaviour
 {
@@ -12,9 +11,23 @@ public class ThirdPersonController : MonoBehaviour
     [SerializeField] private Animator _animator;
 
     private float _turnSmoothVelocity;
+    private PhotonView _view;
+    private VariableJoystick _joystick;
 
+    
+    private void Start()
+    {
+        _view = GetComponent<PhotonView>();
+        _camera = Camera.main.transform;
+        
+        _joystick = FindObjectOfType<VariableJoystick>();
+        _joystick.gameObject.SetActive(SystemInfo.deviceType == DeviceType.Handheld ? true : false);
+    }
+    
     private void Update()
     {
+        if (!_view.IsMine) return;
+        
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;

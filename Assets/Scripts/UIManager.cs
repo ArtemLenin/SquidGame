@@ -5,7 +5,7 @@ public class UIManager : MonoBehaviour
 {
     public void StartGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("Loading Screen");
     }
     
     public void ExitGame()

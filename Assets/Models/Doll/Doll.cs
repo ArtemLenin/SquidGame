@@ -20,24 +20,20 @@ public class Doll : MonoBehaviour
     [SerializeField] private Animator _animator;
 
     private State _state;
-
     private void Start()
     {
         Invoke(nameof(StartGame), 3f);
     }
-
     public void StartGame()
     {
         _animator.SetTrigger("Start Game");
         StartCoroutine(nameof(GreenLight));
         _animator.ResetTrigger("Sing");
     }
-
     private bool IsPlaying()
     {
         return _sound.isPlaying;
     }
-
     private IEnumerator GreenLight()
     {
         _animator.SetTrigger("Sing");
@@ -46,7 +42,6 @@ public class Doll : MonoBehaviour
         yield return new WaitWhile(IsPlaying);
         StartCoroutine(nameof(RedLight));
     }
-
     private IEnumerator RedLight()
     {
         _animator.SetTrigger("Scan");
@@ -59,7 +54,6 @@ public class Doll : MonoBehaviour
 
         StartCoroutine(nameof(GreenLight));
     }
-
     private void Update()
     {
         if (_state == State.Scaning)
@@ -77,7 +71,6 @@ public class Doll : MonoBehaviour
             }
         }
     }
-
     private void ChangeState(State state)
     {
         _state = state;
