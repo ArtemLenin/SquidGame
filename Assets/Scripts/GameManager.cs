@@ -6,7 +6,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    Soldier[] soldiers;
+    public Doll Doll;
+    private Soldier[] soldiers;
 
     private void Awake()
     {
@@ -52,5 +53,27 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(soldier.KillAllTarget());
         }
+    }
+
+    public List<Participant> GetParticipants()
+    {
+        return FindObjectsOfType<Participant>().ToList();
+    }
+
+    public void GameOver()
+    {
+        ClearParticipant();
+        Doll.Stop();
+        KillLoosers();
+    }
+
+    private void ClearParticipant()
+    {
+        List<Participant> participants = GetParticipants();
+        foreach (Participant participant in participants)
+        {
+            ExcludePlayer(participant);
+        }
+        
     }
 }

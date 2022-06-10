@@ -27,6 +27,12 @@ public class Timer : MonoBehaviour
         {
             TimerPanel.color = Color.red; 
             CancelInvoke(nameof(Tick));
+            TimeOut();
         }
+    }
+
+    private void TimeOut()
+    {
+        GameManager.Instance.GameOver();
     }
 }

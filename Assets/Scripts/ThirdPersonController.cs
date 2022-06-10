@@ -20,8 +20,8 @@ public class ThirdPersonController : MonoBehaviour
         _view = GetComponent<PhotonView>();
         _camera = Camera.main.transform;
         
-        _joystick = FindObjectOfType<VariableJoystick>();
-        _joystick.gameObject.SetActive(SystemInfo.deviceType == DeviceType.Handheld ? true : false);
+        //_joystick = FindObjectOfType<VariableJoystick>();
+        //_joystick.gameObject.SetActive(SystemInfo.deviceType == DeviceType.Handheld ? true : false);
     }
     
     private void Update()

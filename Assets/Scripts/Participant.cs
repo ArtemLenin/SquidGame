@@ -18,4 +18,9 @@ public class Participant : MonoBehaviour
         }
         Destroy(this);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Destroy(this);
+    }
 }

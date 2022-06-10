@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
@@ -58,21 +56,31 @@ public class Doll : MonoBehaviour
     {
         if (_state == State.Scaning)
         {
-            List<Participant> participants = FindObjectsOfType<Participant>().ToList();
-            foreach (Participant participant in participants)
-            {
-                if (participant.TryGetComponent(out CharacterController controller))
-                {
-                    if (controller.velocity.magnitude > 0.1 && participant.IsPlaying)
-                    {
-                        GameManager.Instance.ExcludePlayer(participant);
-                    }
-                }
-            }
+            Check_Participants();
         }
     }
     private void ChangeState(State state)
     {
         _state = state;
+    }
+
+    private void Check_Participants()
+    {
+        var participants = GameManager.Instance.GetParticipants();
+        foreach (Participant participant in participants)
+        {
+            if (participant.TryGetComponent(out CharacterController controller))
+            {
+                if (controller.velocity.magnitude > 0.1 && participant.IsPlaying)
+                {
+                    GameManager.Instance.ExcludePlayer(participant);
+                }
+            }
+        }
+    }
+
+    public void Stop()
+    {
+        StopAllCoroutines();
     }
 }
